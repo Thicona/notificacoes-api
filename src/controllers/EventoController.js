@@ -21,38 +21,48 @@ function store(req, res) {
     if (!nome || !data) {
         return res.status(400).json({ erro: "Nome e data são obrigatórios" });
     }
-    const novoEvento = EventoModel.criar({
-        nome,
-        descricao,
-        data,
-        local,
-        capacidade,
-    });
-    res.status(201).json(novoEvento);
-}
-// PUT /eventos/:id — atualizar
+    // 1. Nome não pode ser vazio (só espaços)
+    if (!nome || nome.trim() === "") {
+        return res.status(400).json({ erro: "Nome não pode ser vazio" });
+    }
+    // 2. Capacidade deve ser um número positivo (se informada)
+    if (capacidade !== undefined && (isNaN(capacidade) || capacidade <= 0)) {
+        return res.status(400).json({ erro: "Capacidade deve ser um número positivo" });
+    }
 
-function update(req, res) {
-    const id = parseInt(req.params.id);
-    const eventoAtualizado = EventoModel.atualizar(id, req.body);
-    if (!eventoAtualizado) {
-        return res.status(404).json({ erro: "Evento não encontrado" });
+        const novoEvento = EventoModel.criar({
+            nome,
+            descricao,
+            data,
+            local,
+            capacidade,
+        });
+        res.status(201).json(novoEvento);
+
     }
-    res.json(eventoAtualizado);
-}
-// DELETE /eventos/:id — deletar
-function destroy(req, res) {
-    const id = parseInt(req.params.id);
-    const deletado = EventoModel.deletar(id);
-    if (!deletado) {
-        return res.status(404).json({ erro: "Evento não encontrado" });
+    // PUT /eventos/:id — atualizar
+
+    function update(req, res) {
+        const id = parseInt(req.params.id);
+        const eventoAtualizado = EventoModel.atualizar(id, req.body);
+        if (!eventoAtualizado) {
+            return res.status(404).json({ erro: "Evento não encontrado" });
+        }
+        res.json(eventoAtualizado);
     }
-    res.status(204).send();
-}
-module.exports = {
-    index,
-    show,
-    store,
-    update,
-    destroy,
-};
+    // DELETE /eventos/:id — deletar
+    function destroy(req, res) {
+        const id = parseInt(req.params.id);
+        const deletado = EventoModel.deletar(id);
+        if (!deletado) {
+            return res.status(404).json({ erro: "Evento não encontrado" });
+        }
+        res.status(204).send();
+    }
+    module.exports = {
+        index,
+        show,
+        store,
+        update,
+        destroy,
+    };
