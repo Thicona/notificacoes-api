@@ -1,8 +1,14 @@
 const express = require("express");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
+
 const app = express();
 
 // Middleware para ler JSON no body
 app.use(express.json());
+
+// Documentação Swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Importar rotas
 const eventoRoutes = require("./routes/eventoRoutes");
@@ -21,7 +27,7 @@ app.get("/", (req, res) => {
     rotas: {
       eventos: "/eventos",
       participantes: "/participantes",
-      inscricoes: "/inscricoes",
+      inscricoes: "/inscricoes", 
     },
   });
 });
